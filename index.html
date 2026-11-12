@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0b0f17">
+  <title>DayTrack - Daily Diary, Tasks & Handwriting Journal</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Caveat:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="theme-dark">
+  <div class="app-layout">
+    <!-- Sidebar Navigation (Desktop) / Bottom Nav (Mobile) -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            <path d="M12 6v6"></path>
+            <path d="M9 9h6"></path>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <h2>DayTrack</h2>
+          <span>Personal Life OS</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" data-view="dashboard">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+          </svg>
+          <span>Dashboard</span>
+        </button>
+
+        <button class="nav-item" data-view="diary">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          <span>Daily Diary</span>
+        </button>
+
+        <button class="nav-item" data-view="tasks">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 11l3 3L22 4"></path>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+          </svg>
+          <span>Tasks & Activity</span>
+          <span id="badge-pending" class="badge">0</span>
+        </button>
+
+        <button class="nav-item" data-view="notes">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+          <span>My Notes</span>
+        </button>
+
+        <button class="nav-item" data-view="device-access">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+          </svg>
+          <span>Phone / Sync</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="btn-theme-toggle" class="footer-btn" title="Toggle Theme">
+          <svg class="icon moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg class="icon sun-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+          </svg>
+          <span class="theme-label">Dark Mode</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Bar Header -->
+      <header class="app-header">
+        <div class="header-left">
+          <h1 id="view-title">Dashboard</h1>
+          <p id="header-date" class="header-subtitle">Loading date...</p>
+        </div>
+        <div class="header-actions">
+          <button id="quick-add-task-btn" class="btn btn-secondary">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Add Task</span>
+          </button>
+          <button id="quick-write-btn" class="btn btn-primary">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+            <span>Write Entry</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- VIEW 1: DASHBOARD -->
+      <section id="view-dashboard" class="content-view active">
+        <!-- Summary Cards -->
+        <div class="dashboard-stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon-wrapper blue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Total Diary Entries</span>
+              <h3 id="stat-total-entries">0</h3>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon-wrapper green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Tasks Completed</span>
+              <h3 id="stat-tasks-completed">0</h3>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon-wrapper amber">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Pending Activity</span>
+              <h3 id="stat-tasks-pending">0</h3>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon-wrapper purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Personal Notes</span>
+              <h3 id="stat-total-notes">0</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Two-Column Grid -->
+        <div class="dashboard-columns">
+          <!-- Left Column: Activity & Pending Tasks -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3>Current & Pending Activity</h3>
+                <span class="card-subtitle">Prioritized to-do list</span>
+              </div>
+              <button class="text-link-btn" data-go-view="tasks">View All &rarr;</button>
+            </div>
+
+            <div class="quick-add-row">
+              <input type="text" id="dash-quick-task-input" placeholder="Quick add pending activity..." />
+              <button id="dash-quick-task-btn" class="btn btn-sm btn-primary">Add</button>
+            </div>
+
+            <div id="dash-task-list" class="dash-task-list">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Right Column: Today's Diary Status & Recent Reflections -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3>Today's Maintain Diary</h3>
+                <span id="dash-today-status" class="card-subtitle">Checking status...</span>
+              </div>
+              <button class="text-link-btn" data-go-view="diary">Open Journal &rarr;</button>
+            </div>
+
+            <div id="dash-today-preview" class="today-preview-box">
+              <!-- Rendered via JS -->
+            </div>
+
+            <div class="recent-entries-section">
+              <h4 class="section-mini-title">Recent Diary History</h4>
+              <div id="dash-recent-entries" class="recent-entries-list">
+                <!-- Rendered via JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 2: DAILY DIARY (TEXT & HANDWRITING CANVAS) -->
+      <section id="view-diary" class="content-view">
+        <div class="diary-toolbar">
+          <div class="date-navigator">
+            <button id="btn-prev-day" class="icon-btn" title="Previous Day">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <input type="date" id="diary-date-picker" class="date-input" />
+            <button id="btn-today" class="pill-btn">Today</button>
+            <button id="btn-next-day" class="icon-btn" title="Next Day">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Input Mode Switcher: Typed vs Handwritten -->
+          <div class="entry-mode-switch">
+            <button class="mode-tab active" data-entry-mode="typed">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="4" y1="7" x2="20" y2="7"></line>
+                <line x1="10" y1="12" x2="20" y2="12"></line>
+                <line x1="6" y1="17" x2="20" y2="17"></line>
+              </svg>
+              <span>Typed Entry</span>
+            </button>
+            <button class="mode-tab" data-entry-mode="handwritten">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                <path d="M2 2l7.586 7.586"></path>
+                <circle cx="11" cy="11" r="2"></circle>
+              </svg>
+              <span>Pen / Touch Handwritten</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="diary-container">
+          <!-- Meta Controls: Mood & Tags -->
+          <div class="diary-meta-bar">
+            <div class="mood-selector">
+              <span class="meta-label">Day Mood:</span>
+              <div class="mood-emojis">
+                <button class="mood-btn active" data-mood="😊" title="Happy">😊</button>
+                <button class="mood-btn" data-mood="🚀" title="Productive">🚀</button>
+                <button class="mood-btn" data-mood="😌" title="Peaceful">😌</button>
+                <button class="mood-btn" data-mood="⚡" title="Energetic">⚡</button>
+                <button class="mood-btn" data-mood="😴" title="Tired">😴</button>
+                <button class="mood-btn" data-mood="🌧️" title="Low">🌧️</button>
+              </div>
+            </div>
+
+            <div class="diary-tags-input-group">
+              <span class="meta-label">Tag:</span>
+              <input type="text" id="diary-tag-input" placeholder="e.g. Work, Fitness, Ideas" />
+            </div>
+
+            <button id="btn-save-diary" class="btn btn-primary">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+              <span>Save Diary</span>
+            </button>
+          </div>
+
+          <!-- MODE A: TYPED DIARY -->
+          <div id="mode-typed-panel" class="diary-input-panel active">
+            <input type="text" id="diary-title-input" class="diary-title-input" placeholder="Give today's entry a title (e.g., Launch day reflections...)" />
+            <textarea id="diary-content-input" class="diary-content-input" placeholder="Write about your day: activities completed, thoughts, achievements, challenges, and what you're grateful for..."></textarea>
+          </div>
+
+          <!-- MODE B: TOUCH & STYLUS HANDWRITTEN CANVAS -->
+          <div id="mode-handwritten-panel" class="diary-input-panel">
+            <div class="pen-toolbar">
+              <div class="pen-tools-left">
+                <!-- Color palette -->
+                <div class="color-palette">
+                  <button class="color-dot active" data-color="#38bdf8" style="background:#38bdf8;" title="Cyan"></button>
+                  <button class="color-dot" data-color="#ffffff" style="background:#ffffff;" title="White"></button>
+                  <button class="color-dot" data-color="#10b981" style="background:#10b981;" title="Green"></button>
+                  <button class="color-dot" data-color="#f59e0b" style="background:#f59e0b;" title="Amber"></button>
+                  <button class="color-dot" data-color="#ef4444" style="background:#ef4444;" title="Red"></button>
+                  <button class="color-dot" data-color="#ec4899" style="background:#ec4899;" title="Pink"></button>
+                </div>
+
+                <!-- Pen size -->
+                <div class="pen-size-group">
+                  <span class="pen-label">Thickness:</span>
+                  <input type="range" id="pen-size-slider" min="1" max="18" value="3" />
+                  <span id="pen-size-val" class="pen-size-val">3px</span>
+                </div>
+
+                <!-- Eraser toggle -->
+                <button id="btn-pen-eraser" class="tool-btn" title="Eraser">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 20H7L3 16C2 15 2 13 3 12L13 2L22 11L18 15"></path>
+                    <line x1="18" y1="15" x2="6" y2="15"></line>
+                  </svg>
+                  <span>Eraser</span>
+                </button>
+              </div>
+
+              <div class="pen-tools-right">
+                <button id="btn-pen-undo" class="tool-btn" title="Undo stroke">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                  </svg>
+                  <span>Undo</span>
+                </button>
+                <button id="btn-pen-clear" class="tool-btn danger" title="Clear page">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  <span>Clear Pad</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Stylus Canvas Pad -->
+            <div class="canvas-wrapper">
+              <canvas id="handwriting-canvas"></canvas>
+              <div class="canvas-hint">Touch screen or write with a stylus / digital pen here</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 3: TASKS & PENDING ACTIVITY -->
+      <section id="view-tasks" class="content-view">
+        <div class="tasks-control-bar">
+          <div class="tasks-filter-pills">
+            <button class="filter-pill active" data-filter="all">All Activities (<span id="count-all">0</span>)</button>
+            <button class="filter-pill" data-filter="pending">Pending (<span id="count-pending">0</span>)</button>
+            <button class="filter-pill" data-filter="completed">Completed (<span id="count-completed">0</span>)</button>
+          </div>
+
+          <div class="tasks-search">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="task-search-input" placeholder="Search tasks..." />
+          </div>
+        </div>
+
+        <!-- Add Task Form Card -->
+        <div class="add-task-card">
+          <form id="new-task-form" class="task-form-grid">
+            <div class="form-group flex-2">
+              <label>Task / Activity Name</label>
+              <input type="text" id="task-title-input" placeholder="What do you need to do?" required />
+            </div>
+
+            <div class="form-group">
+              <label>Priority</label>
+              <select id="task-priority-input">
+                <option value="high">🔴 High Priority</option>
+                <option value="medium" selected>🟡 Medium</option>
+                <option value="low">🟢 Low</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Category</label>
+              <select id="task-category-input">
+                <option value="work">💼 Work / Job</option>
+                <option value="personal" selected>🏠 Personal</option>
+                <option value="health">🏃 Health & Fitness</option>
+                <option value="study">📚 Study & Learning</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Due Date</label>
+              <input type="date" id="task-due-input" />
+            </div>
+
+            <div class="form-group form-btn-group">
+              <button type="submit" class="btn btn-primary full-width">Add Task</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Task List Items -->
+        <div id="full-tasks-list" class="full-tasks-list">
+          <!-- Rendered via JS -->
+        </div>
+      </section>
+
+      <!-- VIEW 4: MY NOTES -->
+      <section id="view-notes" class="content-view">
+        <div class="notes-toolbar">
+          <div class="notes-search-box">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="notes-search-input" placeholder="Search my notes..." />
+          </div>
+          <button id="btn-add-note" class="btn btn-primary">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>New Note</span>
+          </button>
+        </div>
+
+        <!-- Notes Grid -->
+        <div id="notes-grid" class="notes-grid">
+          <!-- Rendered via JS -->
+        </div>
+      </section>
+
+      <!-- VIEW 5: PHONE ACCESS & CROSS-DEVICE SYNC -->
+      <section id="view-device-access" class="content-view">
+        <div class="device-access-container">
+          <div class="device-banner">
+            <div class="device-banner-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              </svg>
+            </div>
+            <div class="device-banner-text">
+              <h2>Access On Your Phone & Other Devices</h2>
+              <p>You can use DayTrack from your mobile phone, tablet, or work laptop. Your handwritten stylus notes and daily activities work seamlessly on any touch screen.</p>
+            </div>
+          </div>
+
+          <div class="access-methods-grid">
+            <!-- Method 1: Local Network / Wi-Fi -->
+            <div class="access-card">
+              <div class="access-card-badge">Instant (Local Wi-Fi)</div>
+              <h3>1. Connect on Your Home / Office Wi-Fi</h3>
+              <p>When your phone and computer are on the same Wi-Fi network, start a quick local server on your PC and open the IP address in your phone's browser:</p>
+              
+              <div class="code-box">
+                <code>npx serve . -p 3000</code>
+                <span>or</span>
+                <code>python -m http.server 3000</code>
+              </div>
+
+              <p class="step-hint">Then on your phone, open <strong>http://&lt;YOUR_PC_IP&gt;:3000</strong> (e.g. <code>http://192.168.1.15:3000</code>).</p>
+            </div>
+
+            <!-- Method 2: Free Cloud Deploy -->
+            <div class="access-card">
+              <div class="access-card-badge">Anywhere in the World</div>
+              <h3>2. Access Anywhere via Free Web Hosting</h3>
+              <p>You can upload this project for free to <strong>GitHub Pages</strong>, <strong>Vercel</strong>, or <strong>Netlify</strong>. You'll get your own secure URL (e.g. <code>https://my-diary.vercel.app</code>) accessible 24/7 from any phone or computer.</p>
+              
+              <ul class="feature-bullets">
+                <li>Works on Android, iPhone, iPad, Windows, and Mac.</li>
+                <li>Add to Phone Home Screen as an App (PWA).</li>
+                <li>Handwrite with Apple Pencil, S-Pen, or finger touch.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Data Backup & Restore -->
+          <div class="backup-section">
+            <div class="backup-header">
+              <div>
+                <h3>Data Backup & Transfer</h3>
+                <p>Transfer your diary entries, handwritten pages, tasks, and notes between devices easily.</p>
+              </div>
+              <div class="backup-actions">
+                <button id="btn-export-data" class="btn btn-secondary">
+                  <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span>Export Backup (JSON)</span>
+                </button>
+                <label for="import-file-input" class="btn btn-primary cursor-pointer">
+                  <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  <span>Import Backup</span>
+                </label>
+                <input type="file" id="import-file-input" accept=".json" class="hidden" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Note Edit Modal -->
+  <div id="note-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="note-modal-title">New Note</h3>
+        <button id="close-note-modal" class="close-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="modal-note-title" placeholder="Note Title..." />
+        <textarea id="modal-note-content" placeholder="Write your note, idea, checklist, or reflection here..."></textarea>
+        <div class="color-picker-row">
+          <span>Note Color:</span>
+          <div class="note-colors">
+            <button class="note-color-opt active" data-color="blue" style="background: #38bdf8;"></button>
+            <button class="note-color-opt" data-color="purple" style="background: #a855f7;"></button>
+            <button class="note-color-opt" data-color="emerald" style="background: #10b981;"></button>
+            <button class="note-color-opt" data-color="amber" style="background: #f59e0b;"></button>
+            <button class="note-color-opt" data-color="rose" style="background: #f43f5e;"></button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-cancel-note" class="btn btn-secondary">Cancel</button>
+        <button id="btn-save-note" class="btn btn-primary">Save Note</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">Saved successfully!</div>
+
+  <script src="app.js"></script>
+</body>
+</html>
